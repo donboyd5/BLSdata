@@ -1,0 +1,14 @@
+data_type_code	data_type_text
+01	All Employees, In Thousands
+02	Average Weekly Hours of All Employees
+03	Average Hourly Earnings of All Employees, In Dollars
+06	Production or Nonsupervisory Employees, In Thousands
+07	Average Weekly Hours of Production Employees
+08	Average Hourly Earnings of Production Employees, In Dollars
+11	Average Weekly Earnings of All Employees, In Dollars
+21	Diffusion Indexes, 1-month span, seasonally adjusted, total nonfarm
+22	Diffusion Indexes, 3-month span, seasonally adjusted, total nonfarm
+23	Diffusion Indexes, 6-month span, seasonally adjusted, total nonfarm
+24	Diffusion Indexes, 12-month span, seasonally adjusted, total nonfarm
+26	All Employees, 3-month average change, In Thousands, seasonally adjusted
+30	Average Weekly Earnings of Production Employees, In Dollars

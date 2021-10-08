@@ -1,0 +1,16 @@
+Package: BLSdata
+Type: Package
+Title: BLS Current employment statistics and state and metro area employment data
+Version: 0.3.0
+Author: Don Boyd
+Maintainer: Don Boyd <donboyd5@gmail.com>
+Description: An annual file, and a monthly file.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: bzip2
+Depends: 
+    R (>= 3.50)
+RoxygenNote: 7.1.2
+URL: https://github.com/donboyd5/BLSdata
+BugReports: https://github.com/donboyd5/BLSdata/issues

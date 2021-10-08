@@ -1,0 +1,661 @@
+The /pub/time.series/compressed/tape.format directory contains a set of compressed time series
+data files.  These files are named according to the following format:
+
+bls.[survey abbr.].date.yyyymm.z where:
+
+[survey abbr.] = cpi for Consumer Price Index data
+               = eena for National Employment, Hours and Earnings data (SIC-based)
+               = cena for National Employment, Hours and Earnings data (NAICS-based)
+               = eesa for State and Metropolitan Area Employment, Hours and Earnings data (SIC-based)
+               = eesm for State and Metropolitan Area Employment, Hours and Earnings data (NAICS-based)
+               = laus for Local Area Unemployment Statistics data 
+               = lfeu for Labor Force Employment and Unemployment data
+               = ppir for Producer Price Index data
+               = wpi for Producer Price Index Commodities data
+
+yyyy = year
+mm = month
+z = file extension indicating compressed files
+
+Multiple file partitions (denoted with a number following the survey abbr.) are provided for
+those surveys with large database volumes.
+
+To decompress these files, refer to the README file located within this sub-directory for
+instructions on using the file decompression utilities provided within the 
+/pub/time.series/compressed/bin sub-directory.
+
+The sections below outline the tape format specifications for the following:
+---------------------------------------------
+Section I - tape format specifications for all surveys except NAICS-based State and Metropolitan Area Employment, Hours and Earnings data (eesm)
+
+Section II - tape format specifications for NAICS-based State and Metropolitan Area Employment, Hours and Earnings data (eesm)
+---------------------------------------------
+Section I - tape format specifications for all surveys except NAICS-based State and Metropolitan Area Employment, Hours and Earnings data (eesm)
+
+Table 1.     Series Title Record Format
+Table 2.     Series Data Record Format for Monthly Series
+Table 3.     Series Data Record Format for Quarterly Series
+Table 4.     Series Data Record Format for Semi-Annual Series
+Table 5.     Series Data Record Format for Annual Series
+
+
+
+
+                                         Tape Format
+
+
+
+                            Table 1.     Series Title Record Format
+          
+RECORD                                    FIELD
+POSITION  SOURCE                          NAME                    NOTES                                                                    
+            
+
+1                                    Record Code            Always coded 'T'.
+
+2-18     xx.series.series_id         Series Code            Provides unique identification for
+                                                            each series.  This field is 
+                                                            subdivided in a specific manner for
+                                                            each file.
+
+19-112   xx.title.series_title       Series Title           Alphanumeric title; left-justified.
+
+113-120                              Filler                         Blanks.
+
+121-123  xx.series.begin_period      Series Begin Period    The period the series begins.  The
+                                                            form is PXX where P indicates 
+                                                            periodicity and XX indicates month, 
+                                                            quarter, semi-annual or annual
+                                                            indicator.
+
+                                                            Periodicity may be : 
+                                                            
+                                                            'M' for monthly data
+                                                            'Q' for quarterly data
+                                                            'S' for semi-annual data
+                                                            'A' for annual data
+                                                            
+                                                            For Monthly Survey:    
+
+                                                            'XX' values are '01-13'
+                                                            
+                                                            For Quarterly Survey:  
+
+                                                            'XX' values are '01-05'
+                                                            
+                                                            For Semi-Annual Survey:
+
+                                                            'XX' values are '01-03'
+                                                            
+                                                            For Annual Survey:     
+
+                                                            'XX' values are '01'
+
+124-127  xx.series.begin_year       Series Begin Year       The year the series begins.  The 
+                                                            form is YYYY where YYYY indicates  
+                                                            year.
+
+128-130  xx.series.end_period       Series End Period       The period the series ends.  The
+                                                            form is PXX where P indicates 
+                                                            periodicity and XX indicates
+                                                            month, quarter, semi-annual or 
+                                                            annual indicator.
+                                                            
+                                                            Periodicity may be : 
+
+                                                            'M' for monthly data
+                                                            'Q' for quarterly data
+                                                            'S' for semi-annual data
+                                                            'A' for annual data
+                                                            
+                                                            For Monthly Survey:   
+                                                            'XX' values are '01-13'
+                                                            
+                                                            For Quarterly Survey: 
+                                                            'XX' values are '01-05'
+
+                                                            For Semi-Annual Survey: 
+                                                            'XX' values are '01-03'
+                                                            
+                                                            For Annual Survey:  
+                                                            'XX' values are '01'
+
+131-134  xx.series.end_year         Series End Year         The year the series ends.  
+                                                            The form is YYYY  where YYYY 
+                                                            indicates year.
+
+135-191                             Filler
+
+
+
+                               Table 2.     Series Data Record Format for Monthly Series
+                
+RECORD                                FIELD
+POSITION    SOURCE                    NAME                      NOTES
+
+1                                     Record Code              Always coded 'M'.
+
+2-18      xx.data.priv.series_id      Series Code              See description under title 
+                                                               records.
+
+19-22     xx.data.priv.year           Year
+
+23-35     xx.data.priv.M13            Annual Average Data	
+
+23-34     xx.data.priv.M13            Value                    Numeric value includes decimal                                                                                             
+                                                               place and sign 
+
+35                                    Status                   (0=available  1=not available)
+
+36-48                                 January Data
+
+36-47     xx.data.priv.M01            Value                    Numeric value includes decimal
+                                                               place and sign
+
+48                                    Status                   (0=available   1=not available)
+
+49-61                                 February Data
+
+49-60     xx.data.priv.M02            Value                    Numeric value includes decimal
+                                                               place and sign
+
+61                                    Status                   (0=available   1=not available)
+
+62-74                                 March Data             
+
+62-73     xx.data.priv.M03            Value                    Numeric value includes decimal
+                                                               place and sign
+
+74                                    Status                   (0=available   1=not available)
+
+75-87                                 April Data
+
+75-86     xx.data.priv.M04            Value                    Numeric value includes decimal
+                                                               place and sign
+
+87                                    Status                   (0=available   1=not available)
+
+88-100                                May Data
+
+88-99     xx.data.priv.M05            Value                    Numeric value includes decimal
+                                                               place and sign
+
+100                                   Status                   (0=available   1=not available)
+
+101-113                               June Data
+
+101-112   xx.data.priv.M06            Value                    Numeric value includes decimal
+                                                               place and sign
+
+113                                   Status                   (0=available   1=not available)
+
+114-126                               July Data
+
+114-125   xx.data.priv.M07            Value                    Numeric value includes decimal 
+                                                               place and sign
+
+126                                   Status                   (0=available   1=not available)
+
+127-139                               August Data
+
+127-138   xx.data.priv.M08            Value                    Numeric value includes decimal
+                                                               place and sign
+
+139                                   Status                   (0=available   1=not available)
+
+140-152                               September Data
+
+140-151   xx.data.priv.M09            Value                    Numeric value includes decimal
+                                                               place and sign
+
+152                                   Status                   (0=available   1=not available)
+
+153-165                               October Data
+
+153-164   xx.data.priv.M10            Value                    Numeric value includes decimal
+                                                               place and sign
+
+165                                   Status                   (0=available   1=not available)
+
+166-178                               November Data
+
+166-177   xx.data.priv.M11            Value                    Numeric value includes decimal
+                                                               place and sign
+
+178                                   Status                   (0=available   1=not available)
+
+179-191                               December Data
+
+179-190   xx.data.priv.M12            Value                    Numeric value includes decimal 
+                                                               place and sign
+
+191                                   Status                   (0=available   1=not available)      
+
+
+
+                            Table 3.     Series Data Record Format for Quarterly Series
+                     
+RECORD                             FIELD
+POSITION   SOURCE                  NAME                        NOTES
+
+1                                 Record Code                  Always coded 'Q'.
+ 
+2-18   xx.data.priv.series_id     Series Code                  See description under title records.
+ 
+19-22  xx.data.priv.year          Year
+
+23-35                             Annual Average Data
+
+23-34  xx.data.priv.Q05           Value                        Numeric value includes decimal 
+                                                               place and sign
+
+35                                Status                       (0=available   1=not available)
+
+36-48                             First Quarter Data
+
+36-47  xx.data.priv.Q01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+48                                Status                       (0=available   1=not available)
+
+49-61                             Second Quarter Data
+
+49-60  xx.data.priv.Q02           Value                        Numeric value includes decimal
+                                                               place and sign
+
+61                                Status                       (0=available   1=not available)
+
+62-74                             Third Quarter Data
+
+62-73  xx.data.priv.Q03           Value                        Numeric value includes decimal
+                                                               place and sign
+
+74                                Status                       (0=available   1=not available)
+
+75-87                             Fourth Quarter Data
+
+75-86   xx.data.priv.Q04          Value                        Numeric value includes decimal
+                                                               place and sign
+
+87                                Status                       (0=available   1=not available)
+
+88-191                            Filler                          Blanks
+
+
+
+
+
+                           Table 4.     Series Data Record Format for Semi-Annual Series
+                     
+RECORD                            FIELD
+POSITION                          NAME                         NOTES
+
+1                                 Record Code                  Always coded 'S'.
+
+2-18   xx.data.priv.series_id     Series Code                  See description under title 
+                                                               records.
+
+19-22  xx.data.priv.year          Year
+
+23-35                             Annual Average Data
+
+23-34  xx.data.priv.S03           Value                        Numeric value includes decimal
+                                                               place and sign
+
+35                                Status                       (0=available   1=not available)
+
+36-48                             First Half Year Data
+
+36-47  xx.data.priv.S01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+48                                Status                       (0=available   1=not available)
+
+49-61                             Second Half Year Data
+
+49-60  xx.data.priv.S02           Value                        Numeric value includes decimal
+                                                               place and sign
+
+61                                Status                       (0=available   1=not available)
+
+62-191                            Filler                            Blanks
+ 
+
+
+
+                         Table 5.     Series Data Record Format for Annual Series
+                     
+RECORD                            FIELD
+POSITION                          NAME                         NOTES
+
+1                                 Record Code                  Always coded 'A'.
+
+2-18   xx.data.priv.series_id     Series Code                  See description under title 
+                                                               records.
+
+19-22  xx.data.priv.year          Year
+
+23-35                             Annual Data
+
+23-34  xx.data.priv.A01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+35                                Status                       (0=available   1=not available)
+
+36-191                            Filler                             Blanks
+
+
+Section II - tape format specifications for NAICS-based State and Metropolitan Area Employment, Hours and Earnings data (eesm)
+
+Table 1.     Series Title Record Format
+Table 2.     Series Data Record Format for Monthly Series
+Table 3.     Series Data Record Format for Quarterly Series
+Table 4.     Series Data Record Format for Semi-Annual Series
+Table 5.     Series Data Record Format for Annual Series
+
+
+
+
+                                         Tape Format
+
+
+
+                            Table 1.     Series Title Record Format
+          
+RECORD                                    FIELD
+POSITION  SOURCE                          NAME                    NOTES                                                                    
+            
+
+1                                    Record Code            Always coded 'T'.
+
+2-31     xx.series.series_id         Series Code            Provides unique identification for
+                                                            each series.  This field is 
+                                                            subdivided in a specific manner for
+                                                            each file.
+
+32-125   xx.title.series_title       Series Title           Alphanumeric title; left-justified.
+
+126-133                              Filler                         Blanks.
+
+134-136  xx.series.begin_period      Series Begin Period    The period the series begins.  The
+                                                            form is PXX where P indicates 
+                                                            periodicity and XX indicates month, 
+                                                            quarter, semi-annual or annual
+                                                            indicator.
+
+                                                            Periodicity may be : 
+                                                            
+                                                            'M' for monthly data
+                                                            'Q' for quarterly data
+                                                            'S' for semi-annual data
+                                                            'A' for annual data
+                                                            
+                                                            For Monthly Survey:    
+
+                                                            'XX' values are '01-13'
+                                                            
+                                                            For Quarterly Survey:  
+
+                                                            'XX' values are '01-05'
+                                                            
+                                                            For Semi-Annual Survey:
+
+                                                            'XX' values are '01-03'
+                                                            
+                                                            For Annual Survey:     
+
+                                                            'XX' values are '01'
+
+137-140  xx.series.begin_year       Series Begin Year       The year the series begins.  The 
+                                                            form is YYYY where YYYY indicates  
+                                                            year.
+
+141-143  xx.series.end_period       Series End Period       The period the series ends.  The
+                                                            form is PXX where P indicates 
+                                                            periodicity and XX indicates
+                                                            month, quarter, semi-annual or 
+                                                            annual indicator.
+                                                            
+                                                            Periodicity may be : 
+
+                                                            'M' for monthly data
+                                                            'Q' for quarterly data
+                                                            'S' for semi-annual data
+                                                            'A' for annual data
+                                                            
+                                                            For Monthly Survey:   
+                                                            'XX' values are '01-13'
+                                                            
+                                                            For Quarterly Survey: 
+                                                            'XX' values are '01-05'
+
+                                                            For Semi-Annual Survey: 
+                                                            'XX' values are '01-03'
+                                                            
+                                                            For Annual Survey:  
+                                                            'XX' values are '01'
+
+144-147  xx.series.end_year         Series End Year         The year the series ends.  
+                                                            The form is YYYY  where YYYY 
+                                                            indicates year.
+
+148-204                             Filler
+
+
+
+                               Table 2.     Series Data Record Format for Monthly Series
+                
+RECORD                                FIELD
+POSITION    SOURCE                    NAME                      NOTES
+
+1                                     Record Code              Always coded 'M'.
+
+2-31      xx.data.priv.series_id      Series Code              See description under title 
+                                                               records.
+
+32-35     xx.data.priv.year           Year
+
+36-48     xx.data.priv.M13            Annual Average Data	
+
+36-47     xx.data.priv.M13            Value                    Numeric value includes decimal                                                                                             
+                                                               place and sign 
+
+48                                    Status                   (0=available  1=not available)
+
+49-61                                 January Data
+
+49-60     xx.data.priv.M01            Value                    Numeric value includes decimal
+                                                               place and sign
+
+61                                    Status                   (0=available   1=not available)
+
+62-74                                 February Data
+
+62-73     xx.data.priv.M02            Value                    Numeric value includes decimal
+                                                               place and sign
+
+74                                    Status                   (0=available   1=not available)
+
+75-87                                 March Data             
+
+75-86     xx.data.priv.M03            Value                    Numeric value includes decimal
+                                                               place and sign
+
+87                                    Status                   (0=available   1=not available)
+
+88-100                                April Data
+
+88-99     xx.data.priv.M04            Value                    Numeric value includes decimal
+                                                               place and sign
+
+100                                   Status                   (0=available   1=not available)
+
+101-113                               May Data
+
+101-112   xx.data.priv.M05            Value                    Numeric value includes decimal
+                                                               place and sign
+
+113                                   Status                   (0=available   1=not available)
+
+114-126                               June Data
+
+114-125   xx.data.priv.M06            Value                    Numeric value includes decimal
+                                                               place and sign
+
+126                                   Status                   (0=available   1=not available)
+
+127-139                               July Data
+
+127-138   xx.data.priv.M07            Value                    Numeric value includes decimal 
+                                                               place and sign
+
+139                                   Status                   (0=available   1=not available)
+
+140-152                               August Data
+
+140-151   xx.data.priv.M08            Value                    Numeric value includes decimal
+                                                               place and sign
+
+152                                   Status                   (0=available   1=not available)
+
+153-165                               September Data
+
+153-164   xx.data.priv.M09            Value                    Numeric value includes decimal
+                                                               place and sign
+
+165                                   Status                   (0=available   1=not available)
+
+166-178                               October Data
+
+166-177   xx.data.priv.M10            Value                    Numeric value includes decimal
+                                                               place and sign
+
+178                                   Status                   (0=available   1=not available)
+
+179-191                               November Data
+
+179-190   xx.data.priv.M11            Value                    Numeric value includes decimal
+                                                               place and sign
+
+191                                   Status                   (0=available   1=not available)
+
+192-204                               December Data
+
+192-203   xx.data.priv.M12            Value                    Numeric value includes decimal 
+                                                               place and sign
+
+204                                   Status                   (0=available   1=not available)      
+
+
+
+                            Table 3.     Series Data Record Format for Quarterly Series
+                     
+RECORD                             FIELD
+POSITION   SOURCE                  NAME                        NOTES
+
+1                                 Record Code                  Always coded 'Q'.
+ 
+2-31   xx.data.priv.series_id     Series Code                  See description under title records.
+ 
+32-35  xx.data.priv.year          Year
+
+36-48                             Annual Average Data
+
+36-47  xx.data.priv.Q05           Value                        Numeric value includes decimal 
+                                                               place and sign
+
+48                                Status                       (0=available   1=not available)
+
+49-61                             First Quarter Data
+
+49-60  xx.data.priv.Q01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+61                                Status                       (0=available   1=not available)
+
+62-74                             Second Quarter Data
+
+62-73  xx.data.priv.Q02           Value                        Numeric value includes decimal
+                                                               place and sign
+
+74                                Status                       (0=available   1=not available)
+
+75-87                             Third Quarter Data
+
+75-86  xx.data.priv.Q03           Value                        Numeric value includes decimal
+                                                               place and sign
+
+87                                Status                       (0=available   1=not available)
+
+88-100                            Fourth Quarter Data
+
+88-99   xx.data.priv.Q04          Value                        Numeric value includes decimal
+                                                               place and sign
+
+100                               Status                       (0=available   1=not available)
+
+101-204                           Filler                          Blanks
+
+
+
+
+
+                           Table 4.     Series Data Record Format for Semi-Annual Series
+                     
+RECORD                            FIELD
+POSITION                          NAME                         NOTES
+
+1                                 Record Code                  Always coded 'S'.
+
+2-31   xx.data.priv.series_id     Series Code                  See description under title 
+                                                               records.
+
+32-35  xx.data.priv.year          Year
+
+36-48                             Annual Average Data
+
+36-47  xx.data.priv.S03           Value                        Numeric value includes decimal
+                                                               place and sign
+
+48                                Status                       (0=available   1=not available)
+
+49-61                             First Half Year Data
+
+49-60  xx.data.priv.S01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+61                                Status                       (0=available   1=not available)
+
+62-74                             Second Half Year Data
+
+62-73  xx.data.priv.S02           Value                        Numeric value includes decimal
+                                                               place and sign
+
+74                                Status                       (0=available   1=not available)
+
+75-204                            Filler                            Blanks
+ 
+
+
+
+                         Table 5.     Series Data Record Format for Annual Series
+                     
+RECORD                            FIELD
+POSITION                          NAME                         NOTES
+
+1                                 Record Code                  Always coded 'A'.
+
+2-31   xx.data.priv.series_id     Series Code                  See description under title 
+                                                               records.
+
+32-35  xx.data.priv.year          Year
+
+36-48                             Annual Data
+
+36-47  xx.data.priv.A01           Value                        Numeric value includes decimal
+                                                               place and sign
+
+48                                Status                       (0=available   1=not available)
+
+49-204                            Filler                             Blanks
+
