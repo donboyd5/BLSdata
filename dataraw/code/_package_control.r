@@ -12,6 +12,9 @@
 # Check Package: 'Ctrl + Shift + E'
 # Test Package: 'Ctrl + Shift + T'
 
+# creating github repo and pushing a git project to it
+# usethis::use_github()
+
 
 # edit the DESCRIPTION file using these commands
 # library(usethis)
