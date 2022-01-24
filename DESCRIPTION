@@ -1,7 +1,7 @@
 Package: BLSdata
 Type: Package
 Title: BLS Current employment statistics and state and metro area employment data
-Version: 0.3.0
+Version: 0.3.1
 Author: Don Boyd
 Maintainer: Don Boyd <donboyd5@gmail.com>
 Description: An annual file, and a monthly file.
