@@ -39,6 +39,9 @@ library(tidyverse)
 options(tibble.print_max = 60, tibble.print_min = 60) # if more than 60 rows, print 60 - enough for states
 # ggplot2 tibble tidyr readr purrr dplyr stringr forcats
 library(readr)
+library(vroom)
+library(fs)
+library(archive)
 
 library(btools)
 
@@ -53,43 +56,44 @@ devtools::session_info()
 # devtools::check()
 
 # globals ----
+dir_eesm <- r"(E:\data\BLSData\eesm)"
+
 url_base <- "https://download.bls.gov/pub/time.series/compressed/tape.format/"
 url_sm <- "http://download.bls.gov/pub/time.series/sm/"
 
+
+# fn_area <- "sm.area"
+# fn_dtype <- "sm.data_type"
+# fn_ind <- "sm.industry"
+# fn_ssector <- "sm.supersector"
+# fn_state <- "sm.state"
+
+
+# download documents ------------------------------------------------------
+doclist <- c("sm.area", "sm.data_type", "sm.footnote", "sm.industry", "sm.period", "sm.seasonal", "sm.series", "sm.state", "sm.supersector", "sm.txt")
+urls <- paste0(url_sm, doclist)
+
+purrr::map(urls, function(x) download.file(x, destfile=file.path(dir_eesm, path_file(x)), mode="wb"))
+
 fn_doc <- "tapeformat.doc"
+download.file(paste0(url_base, fn_doc), destfile=file.path(dir_eesm, fn_doc), mode="wb")
 
-fn_area <- "sm.area"
-fn_dtype <- "sm.data_type"
-fn_ind <- "sm.industry"
-fn_ssector <- "sm.supersector"
-fn_state <- "sm.state"
 
+# download data -----------------------------------------------------------
 # fn_data <- "bls.eesm.date202002.gz" # starts 1990
-fn_data <- "bls.eesm.date202108.gz" # starts 1990
-
-
-# download documentation and data ----
-#.. get documentation ONLY UPDATE AS NEEDED ----
-download.file(paste0(url_base, fn_doc), here::here("dataraw", "docs", fn_doc), mode="wb")
-
-download.file(paste0(url_sm, fn_area), here::here("dataraw", "docs", fn_area), mode="wb")
-download.file(paste0(url_sm, fn_dtype), here::here("dataraw", "docs", fn_dtype), mode="wb")
-download.file(paste0(url_sm, fn_ind), here::here("dataraw", "docs", fn_ind), mode="wb")
-download.file(paste0(url_sm, fn_ssector), here::here("dataraw", "docs", fn_ssector), mode="wb")
-download.file(paste0(url_sm, fn_state), here::here("dataraw", "docs", fn_state), mode="wb")
-
-#.. get full data file ----
-download.file(paste0(url_base, fn_data), here::here("dataraw", "data", fn_data), mode="wb")
+# fn_data <- "bls.eesm.date202108.gz" # starts 1990
+fn_data <- "bls.eesm.date202111.gz" # starts 1990
+download.file(paste0(url_base, fn_data), file.path(dir_eesm, fn_data), mode="wb")
 
 # fname <- paste0("bls.eesm.date", dyear, formatC(dmonth, width=2, flag="0")) # format ensures leading zero for months 1-9
 # zfname <- paste0(fname, ".Z")
 
 # read documenation ----
-area <- read_tsv(here::here("dataraw", "docs", fn_area))
-ind <- read_tsv(here::here("dataraw", "docs", fn_ind))
-dtype <- read_tsv(here::here("dataraw", "docs", fn_dtype))
-ssector <- read_tsv(here::here("dataraw", "docs", fn_ssector))
-state <- read_tsv(here::here("dataraw", "docs", fn_state))
+area <- read_tsv(file.path(dir_eesm, str_subset(doclist, "area")))
+ind <- read_tsv(file.path(dir_eesm, str_subset(doclist, "industry")))
+dtype <- read_tsv(file.path(dir_eesm, str_subset(doclist, "data_type")))
+ssector <- read_tsv(file.path(dir_eesm, str_subset(doclist, "super")))
+state <- read_tsv(file.path(dir_eesm, str_subset(doclist, "state")))
 
 # data type
 # data_type_code	data_type_text
@@ -102,6 +106,7 @@ state <- read_tsv(here::here("dataraw", "docs", fn_state))
 # 11	Average Weekly Earnings of All Employees, In Dollars
 # 26	All Employees, 3-month average change, In Thousands, seasonally adjusted
 # 30	Average Weekly Earnings of Production Employees, In Dollars
+# also, diffusion indexes
 
 # read data ----
 # file is space delimited
@@ -116,12 +121,38 @@ state <- read_tsv(here::here("dataraw", "docs", fn_state))
 # df[1:10, 1:5]
 
 # must read full file if we read from zip, before n_max is applied
-df <- read_table(here::here("dataraw", "data", fn_data),
+# df <- read_table(file.path(dir_eesm, fn_data),
+#                  col_names=cnames,
+#                  col_types="cicnnnnnnnnnnnn", # for safety
+#                  skip=1,
+#                  n_max=Inf)
+
+# use archive_read
+# we don't need the time series identification rows that begin with TS, so we'll drop them
+# (skip=1)
+df <- read_table(archive_read(file.path(dir_eesm, fn_data),
+                              path_ext_remove(fn_data),
+                              format="raw",
+                              filter="gzip"),
                  col_names=cnames,
                  col_types="cicnnnnnnnnnnnn", # for safety
-                 skip=0,
+                 skip=1,
                  n_max=Inf)
-problems()
+
+
+# haven't figured out how to get read_table equiv using vroom
+# df <- vroom(archive_read(file.path(dir_eesm, fn_data),
+#                          path_ext_remove(fn_data),
+#                          format="raw",
+#                          filter="gzip"),
+#             trim_ws = TRUE,
+#             delim=" ",
+#             col_names=cnames,
+#             col_types="cicnnnnnnnnnnnn", # for safety
+#             skip=1,
+#             n_max=10)
+df
+problems(df)
 glimpse(df)
 df[1:10, 1:5]
 ht(df)
@@ -193,7 +224,7 @@ ht(df5)
 
 # create and save annual file ----
 eesm_a <- df5 %>%
-  filter(name=="m12") %>%
+  filter(name=="m12") %>% # we want the annual average as of December (I think)
   select(-value) %>%
   select(-annavg, everything(), annavg) %>%
   filter(!is.na(annavg)) %>%
