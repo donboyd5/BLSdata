@@ -35,17 +35,20 @@ library(devtools)
 library(usethis)
 
 library(magrittr)
-library(plyr) # needed for ldply; must be loaded BEFORE dplyr
+# library(plyr) # needed for ldply; must be loaded BEFORE dplyr
 library(tidyverse)
 options(tibble.print_max = 60, tibble.print_min = 60) # if more than 60 rows, print 60 - enough for states
 # ggplot2 tibble tidyr readr purrr dplyr stringr forcats
 library(readr)
+library(vroom)
+library(fs)
 
 library(btools)
 
 sessionInfo()
 devtools::session_info()
 (.packages()) %>% sort
+tidyverse_conflicts()
 
 # run things ----
 # use_package()
@@ -65,13 +68,21 @@ devtools::session_info()
 # fn_ssector <- "sm.supersector"
 # fn_state <- "sm.state"
 
+ddir <- r"(E:\data\BLSData\ces)"
 
 url_base <- "https://download.bls.gov/pub/time.series/ce/"
+# fn_ces <- "ce.data.0.AllCESSeries"
 fn_eea <- "ce.data.01a.CurrentSeasAE"
 
 
 # download documentation and data ----
 #.. get documentation ONLY UPDATE AS NEEDED ----
+
+doclist <- c("ce.datatype", "ce.footnote", "ce.industry", "ce.period", "ce.seasonal", "ce.series", "ce.supersector", "ce.txt")
+urls <- paste0(url_base, doclist)
+
+purrr::map(urls, function(x) download.file(x, destfile=file.path(ddir, path_file(x)), mode="wb"))
+
 # download.file(paste0(url_base, fn_doc), here::here("dataraw", "docs", fn_doc), mode="wb")
 #
 # download.file(paste0(url_sm, fn_area), here::here("dataraw", "docs", fn_area), mode="wb")
@@ -81,6 +92,8 @@ fn_eea <- "ce.data.01a.CurrentSeasAE"
 # download.file(paste0(url_sm, fn_state), here::here("dataraw", "docs", fn_state), mode="wb")
 
 #.. get full data file ----
+download.file(paste0(url_base, fn_ces), file.path(ddir, fn_ces), mode="wb")
+download.file(paste0(url_base, fn_eea), file.path(ddir, fn_eea), mode="wb")
 download.file(paste0(url_base, fn_eea), here::here("dataraw", "data", fn_eea), mode="wb")
 
 
@@ -94,7 +107,8 @@ industry <- read_tsv("https://download.bls.gov/pub/time.series/ce/ce.industry")
 # file is tab delimited
 fn_eea # this is employment, all workers, individual industries
 # must read full file if we read from zip, before n_max is applied
-df <- read_delim(here::here("dataraw", "data", fn_eea),
+df <- read_delim(# here::here("dataraw", "data", fn_eea),
+                 file.path(ddir, fn_eea),
                  delim="\t", trim_ws=TRUE,
                  skip=0, n_max=Inf)
 count(df, footnote_codes)
@@ -131,11 +145,14 @@ glimpse(eea3)
 summary(eea3)
 count(eea3, sort, level, ssector, ssectorf, ind, indf)
 count(eea3 %>% filter(level==4), sort, level, ssector, ssectorf, ind, indf, series, seriesf)
+count(eea3 %>% filter(level==1), sort, level, ssector, ssectorf, ind, indf, series, seriesf)
+count(eea3 %>% filter(level==2), sort, level, ssector, ssectorf, ind, indf, series, seriesf)
 
 count(eea3 %>% filter(ssector==90, level==4), sort, level, ssector, ssectorf, ind, indf, series, seriesf)
 
 gind <- "90922000" # sgxed
 gind <- "90931611" # lged
+gind <- "20000000"
 eea3 %>%
   filter(ind==gind) %>%
   ggplot(aes(date, value)) +
