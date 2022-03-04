@@ -82,7 +82,7 @@ download.file(paste0(url_base, fn_doc), destfile=file.path(dir_eesm, fn_doc), mo
 # download data -----------------------------------------------------------
 # fn_data <- "bls.eesm.date202002.gz" # starts 1990
 # fn_data <- "bls.eesm.date202108.gz" # starts 1990
-fn_data <- "bls.eesm.date202111.gz" # starts 1990
+fn_data <- "bls.eesm.date202112.gz" # starts 1990
 download.file(paste0(url_base, fn_data), file.path(dir_eesm, fn_data), mode="wb")
 
 # fname <- paste0("bls.eesm.date", dyear, formatC(dmonth, width=2, flag="0")) # format ensures leading zero for months 1-9
